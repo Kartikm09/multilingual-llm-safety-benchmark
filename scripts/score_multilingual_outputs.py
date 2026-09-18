@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import argparse
-import csv
 from collections import defaultdict
 from pathlib import Path
+
+from score_validation import load_scored_rows
 
 
 def main() -> int:
@@ -13,8 +14,10 @@ def main() -> int:
     parser.add_argument("csv_path", type=Path)
     args = parser.parse_args()
 
-    with args.csv_path.open(newline="", encoding="utf-8") as handle:
-        rows = list(csv.DictReader(handle))
+    try:
+        rows = load_scored_rows(args.csv_path, ["score"])
+    except ValueError as error:
+        parser.error(str(error))
 
     by_language: dict[str, list[int]] = defaultdict(list)
     by_category: dict[str, list[int]] = defaultdict(list)
