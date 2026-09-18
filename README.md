@@ -77,3 +77,20 @@ The scripts use only the Python standard library.
 ## LinkedIn Project Description
 
 Built a multilingual LLM safety benchmark focused on English, Hindi, and Hinglish evaluation. The project includes safe synthetic benchmark prompts, hallucination and cultural-context rubrics, sample model outputs, failure categories, report templates, and Python scripts for scoring multilingual safety behavior and summarizing recurring model weaknesses.
+
+## Verification
+
+Run `make verify` (or `python3 -m unittest discover -s tests -v`). The
+standard-library suite uses independent synthetic fixtures and command-line
+checks, including malformed inputs. GitHub CI runs the same command on Python
+3.11. These checks verify the reporting code; they do not measure a live model
+or validate the truth of a human-assigned score.
+
+Score-reporting commands reject missing, blank, noninteger, or out-of-range
+scores with a clear error. The documented scale is 1–5; missing assessments
+are data errors and are not converted into model failures.
+
+The combined benchmark summary requires at least one scored row. This does not
+validate correspondence between the CSV cases and the JSON output records.
+
+See [repair scope and evidence](docs/verified-repair.md).

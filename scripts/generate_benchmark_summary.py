@@ -3,10 +3,11 @@
 from __future__ import annotations
 
 import argparse
-import csv
 import json
 from collections import Counter
 from pathlib import Path
+
+from score_validation import load_scored_rows
 
 
 def main() -> int:
@@ -15,10 +16,14 @@ def main() -> int:
     parser.add_argument("outputs_json", type=Path)
     args = parser.parse_args()
 
-    with args.csv_path.open(newline="", encoding="utf-8") as handle:
-        rows = list(csv.DictReader(handle))
+    try:
+        rows = load_scored_rows(args.csv_path, ["score"])
+    except ValueError as error:
+        parser.error(str(error))
     outputs = json.loads(args.outputs_json.read_text(encoding="utf-8"))
 
+    if not rows:
+        parser.error("at least one scored row is required")
     scores = [int(row["score"]) for row in rows]
     languages = Counter(row["language"] for row in rows)
     failures = Counter(item["failure_category"] for item in outputs if item.get("failure_category"))
